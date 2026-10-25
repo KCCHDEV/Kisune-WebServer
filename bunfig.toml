@@ -1,0 +1,3 @@
+[test]
+# ตั้งค่า env ก่อนโหลดโค้ดใดๆ (เช่น ใช้ SQLite ในหน่วยความจำ)
+preload = ["./tests/setup.ts"]

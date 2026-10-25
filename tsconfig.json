@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["bun"],
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "@kitajs/html",
+    "plugins": [{ "name": "@kitajs/ts-html-plugin" }],
+
+    "paths": {
+      "@core/*": ["./core/*"],
+      "@components": ["./src/components/index.ts"],
+      "@components/*": ["./src/components/*"]
+    }
+  },
+  "include": ["index.tsx", "core", "src", "tests", "scripts", "trailer"]
+}

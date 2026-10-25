@@ -1,0 +1,90 @@
+/** รายการตัวอย่างทั้งหมด — ใช้ทั้งหน้าแรกและหน้า /examples */
+export type ExampleLink = { href: string; icon: string; title: string; desc: string; tags: string[]; external?: boolean }
+
+export const examples: ExampleLink[] = [
+  {
+    href: '/examples/routing',
+    icon: '🧭',
+    title: 'Routing ตามไฟล์',
+    desc: 'สร้างไฟล์ = ได้ URL · path params, query, wildcard และ (group)',
+    tags: ['params', 'query', 'wildcard'],
+  },
+  {
+    href: '/examples/validation',
+    icon: '✅',
+    title: 'Validation',
+    desc: 'ประกาศ schema ด้วย t.Object ครั้งเดียว ได้ทั้ง type และการตรวจข้อมูล',
+    tags: ['t.Object', '422', 'type-safe'],
+  },
+  {
+    href: '/examples/htmx',
+    icon: '🔁',
+    title: 'htmx patterns',
+    desc: 'Counter, ค้นหาสด 10,000 รายการ, lazy load, infinite scroll — ไม่ต้องเขียน JS',
+    tags: ['hx-post', 'hx-trigger', 'intersect'],
+  },
+  {
+    href: '/users',
+    icon: '🗃️',
+    title: 'CRUD + SQLite',
+    desc: 'เพิ่ม/ลบผู้ใช้ด้วย bun:sqlite + htmx และ REST API คู่กัน',
+    tags: ['bun:sqlite', 'REST'],
+  },
+  {
+    href: '/examples/sse',
+    icon: '📡',
+    title: 'Server-Sent Events',
+    desc: 'เซิร์ฟเวอร์ push ข้อมูลสดทุกวินาทีด้วย async generator',
+    tags: ['sse()', 'generator', 'real-time'],
+  },
+  {
+    href: '/examples/websocket',
+    icon: '💬',
+    title: 'WebSocket chat',
+    desc: 'ห้องแชทหลายคนด้วย pub/sub ในตัวของ Bun',
+    tags: ['ws', 'publish', 'subscribe'],
+  },
+  {
+    href: '/examples/cache',
+    icon: '🧠',
+    title: 'In-memory cache',
+    desc: 'cache แบบ Redis ในตัวแอพ: TTL, LRU, remember และจำกัด 128 MB · cache ทั้งหน้าด้วยบรรทัดเดียว',
+    tags: ['cache', 'LRU', 'TTL'],
+  },
+  {
+    href: '/examples/upload',
+    icon: '📤',
+    title: 'อัปโหลดไฟล์',
+    desc: 'รับไฟล์ multipart, จำกัดขนาด/ชนิด และคำนวณ SHA-256',
+    tags: ['t.File', 'multipart'],
+  },
+  {
+    href: '/examples/auth',
+    icon: '🔐',
+    title: 'Login + Cookie + Guard',
+    desc: 'cookie ที่เซ็นลายเซ็น และ _guard.ts ป้องกันทั้งโฟลเดอร์',
+    tags: ['cookie', 'guard', 'redirect'],
+  },
+  {
+    href: '/openapi',
+    icon: '📖',
+    title: 'เอกสาร API อัตโนมัติ',
+    desc: 'OpenAPI + Scalar UI สร้างจาก schema ของทุก route ใน src/api',
+    tags: ['openapi', 'scalar'],
+    external: true,
+  },
+  {
+    href: '/examples/testing',
+    icon: '🧪',
+    title: 'Testing ด้วย bun test',
+    desc: 'ทดสอบด้วย app.handle() ไม่ต้องเปิดพอร์ต รันเสร็จในไม่กี่ ms',
+    tags: ['bun test', 'app.handle'],
+  },
+  {
+    href: '/benchmark',
+    icon: '⚡',
+    title: 'ทดสอบความเร็ว',
+    desc: 'วัด req/s และ latency ของเซิร์ฟเวอร์นี้แบบสดๆ',
+    tags: ['req/s', 'p95', 'latency'],
+  },
+]
