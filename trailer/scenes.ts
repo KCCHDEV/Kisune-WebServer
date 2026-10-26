@@ -181,7 +181,7 @@ export function buildTrailer(stage: Stage, data: TrailerData, shots: Shots) {
   })
   frame.update(null)
   hudRoot.add(frame.mesh)
-  const tl1 = label('KITSUNE STUDIO', { color: C.white, size: 15 })
+  const tl1 = label('YURACHI STUDIO', { color: C.white, size: 15 })
   const tl2 = label(`KITSUNE · V1.0 · BUN ${data.info.bun}`, { size: 12, color: C.dim })
   tl1.position.set(-900, 490, 0)
   tl2.position.set(-900, 466, 0)
@@ -252,7 +252,7 @@ export function buildTrailer(stage: Stage, data: TrailerData, shots: Shots) {
   /* ===== 1 PROLOGUE ===== */
   {
     const s = scene('prologue')
-    const small = hudText('KITSUNE STUDIO  /  PROLOGUE', { size: 15, weight: 500, font: MONO, color: C.muted, letterSpacing: 4, shadow: false }, 0, 120)
+    const small = hudText('YURACHI STUDIO  /  PROLOGUE', { size: 15, weight: 500, font: MONO, color: C.muted, letterSpacing: 4, shadow: false }, 0, 120)
     const l1 = hudText('เว็บที่ดี เริ่มจากความเร็ว', { size: 80, weight: 700, color: C.white }, 0, 30)
     const l2 = hudText('แต่ความเร็ว ต้องไม่ยาก', { size: 80, weight: 700, gradient: GRAD }, 0, -80)
     updates.push((t) => {
@@ -844,7 +844,7 @@ export const POST = defineRoute({
     cmd.mesh.position.set(0, -335, 0)
     cmd.mesh.userData.y = -335
     hudRoot.add(cmd.mesh)
-    const made = hudText('MADE WITH  KITSUNE STUDIO', { size: 13, weight: 500, font: MONO, color: C.dim, letterSpacing: 5, shadow: false }, 0, -405)
+    const made = hudText('MADE BY  YURACHI STUDIO', { size: 13, weight: 500, font: MONO, color: C.dim, letterSpacing: 5, shadow: false }, 0, -405)
     updates.push((t) => {
       const on = t > s.start - 0.1
       finaleRings.visible = on

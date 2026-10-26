@@ -45,6 +45,13 @@ export default function Layout({ title, path = '/', wide, children }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{Html.escapeHtml(title ? `${title} · Kitsune` : 'Kitsune — ว่องไว แสนกล ครบในตัวเดียว')}</title>
         <meta name="description" content="Kitsune — ว่องไว แสนกล ครบในตัวเดียว · full-stack Bun + Elysia + htmx เร็ว เบา type-safe" />
+        <meta name="author" content="Yurachi Studio" />
+        <meta property="og:title" content={title ? `${title} · Kitsune` : 'Kitsune — ว่องไว แสนกล ครบในตัวเดียว'} />
+        <meta property="og:description" content="Full-stack starter บน Bun + Elysia + htmx · เร็ว เบา type-safe · โดย Yurachi Studio" />
+        <meta property="og:image" content="/public/og.jpg" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="theme-color" content="#7c3aed" />
         <meta name="htmx-config" content={htmxConfig} />
         <link
           rel="icon"

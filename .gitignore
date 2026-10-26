@@ -4,3 +4,6 @@ node_modules
 core/reload.gen.ts
 .env
 dist
+.claude/
+.DS_Store
+*.log

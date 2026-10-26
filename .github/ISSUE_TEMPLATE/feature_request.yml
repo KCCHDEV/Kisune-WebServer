@@ -1,0 +1,22 @@
+name: ✨ เสนอฟีเจอร์
+description: ไอเดียใหม่ ตัวอย่างใหม่ หรือสิ่งที่อยากให้ดีขึ้น
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: อยากแก้ปัญหาอะไร
+      description: ตอนนี้ติดตรงไหน หรือทำอะไรไม่สะดวก
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: ไอเดียที่อยากได้
+      description: ถ้ามีตัวอย่างโค้ดหรือภาพประกอบ ใส่ได้เลย
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: ทางเลือกอื่นที่ลองแล้ว

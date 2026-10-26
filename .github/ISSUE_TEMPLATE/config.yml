@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 รายงานช่องโหว่ด้านความปลอดภัย
+    url: https://github.com/KCCHDEV/Kisune-WebServer/security/advisories/new
+    about: กรุณารายงานแบบส่วนตัว อย่าเปิด issue สาธารณะ

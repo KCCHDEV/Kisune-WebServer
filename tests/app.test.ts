@@ -29,7 +29,8 @@ describe('API', () => {
 
   it('guard กัน /api/admin ถ้าไม่มี key', async () => {
     expect((await get('/api/admin/stats')).status).toBe(401)
-    expect((await get('/api/admin/stats', { headers: { 'x-api-key': 'dev-secret' } })).status).toBe(200)
+    const key = process.env.ADMIN_KEY ?? 'dev-secret' // ค่าจาก .env ถ้ามี
+    expect((await get('/api/admin/stats', { headers: { 'x-api-key': key } })).status).toBe(200)
   })
 
   it('ไม่พบ route ได้ 404 JSON', async () => {

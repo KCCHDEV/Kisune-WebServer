@@ -1,0 +1,41 @@
+name: 🐛 รายงานบั๊ก
+description: เจอปัญหาหรือสิ่งที่ทำงานไม่ถูกต้อง
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: ขอบคุณที่ช่วยรายงาน 🦊 ยิ่งข้อมูลครบ ยิ่งแก้ได้เร็ว
+  - type: textarea
+    id: what
+    attributes:
+      label: เกิดอะไรขึ้น
+      description: อธิบายปัญหาสั้นๆ
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: ขั้นตอนทำให้เกิดปัญหา
+      placeholder: |
+        1. bun dev
+        2. เปิด /examples/...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: สิ่งที่ควรเกิดขึ้น
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log / ภาพหน้าจอ
+      description: วาง log จาก console หรือแนบภาพ
+      render: shell
+  - type: input
+    id: env
+    attributes:
+      label: สภาพแวดล้อม
+      placeholder: Bun 1.4.4 · Windows 11 · Chrome 141
+    validations:
+      required: true

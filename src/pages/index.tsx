@@ -48,7 +48,7 @@ const reasons = [
 ]
 
 const steps = [
-  { label: 'ติดตั้ง', code: 'bun install\nbun dev' },
+  { label: 'สร้างโปรเจกต์', code: 'bun create KCCHDEV/Kisune-WebServer my-app\ncd my-app\nbun dev' },
   {
     label: 'src/pages/hello.tsx → /hello',
     code: `import { Layout } from '@components'

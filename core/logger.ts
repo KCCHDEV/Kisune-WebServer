@@ -73,11 +73,12 @@ export function printBanner({ name, mode, port, routes }: BannerOptions) {
   console.log()
   console.log(rule())
   console.log(
-    `  ${c.bold(c.white(name))}  ${c.gray('·')}  ${mode.startsWith('production') ? c.green(mode) : c.yellow(mode)}  ${c.gray('·')}  ${c.gray(`Bun ${Bun.version}`)}`,
+    `  ${c.bold(c.white(name))}  ${c.gray('·')}  ${mode.startsWith('production') ? c.green(mode) : c.yellow(mode)}  ${c.gray('·')}  ${c.gray(`Bun ${Bun.version}`)}  ${c.gray('·')}  ${c.violet('Yurachi Studio')}`,
   )
+  const has = (path: string) => routes.some((r) => r.path === path)
   console.log(row('เว็บ', link()))
-  console.log(row('ตัวอย่าง', link('/examples')))
-  console.log(row('ทดสอบ', link('/benchmark')))
+  if (has('/examples')) console.log(row('ตัวอย่าง', link('/examples')))
+  if (has('/benchmark')) console.log(row('ทดสอบ', link('/benchmark')))
   console.log(row('API doc', link('/openapi')))
   console.log(row('cache', `${c.white(Math.round(cache.maxBytes / 1024 / 1024))} MB ${c.gray('(in-memory LRU · ตั้งด้วย CACHE_MAX_MB)')}`))
   console.log(

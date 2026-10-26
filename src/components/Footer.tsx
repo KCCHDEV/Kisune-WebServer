@@ -48,6 +48,14 @@ export default function Footer() {
           </div>
         ))}
       </div>
+      <div class="container footer-bottom">
+        <span>
+          © {new Date().getFullYear()} <strong>Yurachi Studio</strong> · MIT License
+        </span>
+        <a href="https://github.com/KCCHDEV/Kisune-WebServer" target="_blank" rel="noopener" hx-boost="false">
+          GitHub ↗
+        </a>
+      </div>
     </footer>
   )
 }

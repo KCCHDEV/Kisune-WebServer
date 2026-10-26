@@ -3,6 +3,7 @@
  *
  *   bun run trailer                      ถ่ายภาพหน้าจอจริง → render → dist/kitsune-trailer.mp4
  *   bun run trailer -- --frames 3,8,20   render เฉพาะบางวินาทีเป็น PNG (ไว้ตรวจงาน) → dist/frames/
+ *   bun run trailer -- --frames 11 --jpg --out .github/assets   ภาพนิ่ง JPG ไว้ใช้ใน README
  *   bun run trailer -- --no-shots        ใช้ภาพหน้าจอเดิมใน public/trailer/
  *   BROWSER="C:/path/to/chrome.exe" bun run trailer
  *
@@ -17,6 +18,8 @@ const { values } = parseArgs({
   args: Bun.argv.slice(2),
   options: {
     frames: { type: 'string' },
+    out: { type: 'string' },
+    jpg: { type: 'boolean', default: false },
     'no-shots': { type: 'boolean', default: false },
     port: { type: 'string', default: '3123' },
   },
@@ -140,13 +143,14 @@ async function captureShots(browser: Browser) {
 
 /* ---------- PNG บางวินาที (ตรวจงาน) ---------- */
 async function renderStills(page: Page, list: string) {
-  const dir = join(DIST, 'frames')
+  const dir = values.out ? resolve(ROOT, values.out) : join(DIST, 'frames')
   mkdirSync(dir, { recursive: true })
   const canvas = (await page.$('canvas'))!
+  const ext = values.jpg ? 'jpg' : 'png'
   for (const t of list.split(',').map(Number)) {
     await page.evaluate((t) => (window as any).trailer.renderFrame(t), t)
-    const file = join(dir, `t${String(t).padStart(5, '0')}.png`) as `${string}.png`
-    await canvas.screenshot({ path: file })
+    const file = join(dir, `t${String(t).padStart(5, '0')}.${ext}`)
+    await canvas.screenshot(values.jpg ? { path: file as `${string}.jpg`, type: 'jpeg', quality: 86 } : { path: file as `${string}.png` })
     console.log(`  ✓ ${file}`)
   }
 }
