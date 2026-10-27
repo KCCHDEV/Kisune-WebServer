@@ -121,7 +121,7 @@ async function boot() {
   exportBtn.onclick = () => void doExport()
 
   // ให้ scripts/trailer.ts สั่งงานผ่าน puppeteer ได้
-  ;(window as any).trailer = { duration: DURATION, renderFrame, export: doExport, data }
+  ;(window as any).video = (window as any).trailer = { duration: DURATION, renderFrame, export: doExport, data }
   statusEl.textContent = ''
   if (new URLSearchParams(location.search).has('autoplay')) play(0)
 }

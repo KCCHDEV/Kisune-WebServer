@@ -24,6 +24,7 @@
   <a href="#-ฟีเจอร์">ฟีเจอร์</a> ·
   <a href="#-ความเร็ว">ความเร็ว</a> ·
   <a href="#-ตัวอย่างพร้อมใช้">ตัวอย่าง</a> ·
+  <a href="#-คลิปสอนใช้งาน">คลิปสอน</a> ·
   <a href="#-วิดีโอ-trailer">Trailer</a> ·
   <a href="#-คู่มือ">คู่มือ</a>
 </p>
@@ -193,6 +194,38 @@ cd kitsune && bun install && bun dev
 | 🧪 | [Testing](tests) | `bun test` + `app.handle()` ไม่ต้องเปิดพอร์ต |
 | ⚡ | [ทดสอบความเร็ว](src/pages/benchmark) | req/s, p50 / p95 / p99, histogram |
 
+## 🎓 คลิปสอนใช้งาน
+
+คลิปสอนภาษาไทยยาวประมาณ 6 นาที เริ่มตั้งแต่ติดตั้ง Bun ไปจนขึ้น production รวม 11 บท ทุกคำสั่ง โค้ด และภาพหน้าจอในคลิปมาจากโปรเจกต์ที่สร้างด้วย `bun create` แล้วรันจริง
+
+<table>
+  <tr>
+    <td width="33%"><img src=".github/assets/tutorial-01-agenda.jpg" alt="สารบัญ 11 บท" /></td>
+    <td width="33%"><img src=".github/assets/tutorial-02-create.jpg" alt="สร้างโปรเจกต์ด้วย bun create" /></td>
+    <td width="33%"><img src=".github/assets/tutorial-03-page.jpg" alt="สร้างหน้าเว็บ" /></td>
+  </tr>
+  <tr>
+    <td><img src=".github/assets/tutorial-04-api.jpg" alt="ฐานข้อมูล + API" /></td>
+    <td><img src=".github/assets/tutorial-05-htmx.jpg" alt="htmx ทำงานอย่างไร" /></td>
+    <td><img src=".github/assets/tutorial-06-cache.jpg" alt="ความเร็วของ cache" /></td>
+  </tr>
+</table>
+
+| บท | เนื้อหา |
+| --- | --- |
+| 1–3 | ติดตั้ง Bun · `bun create` (เลือกแม่แบบ) · `bun dev` แล้วเปิดเว็บ |
+| 4–5 | โครงสร้างโฟลเดอร์ · สร้างหน้าใหม่ · กฎ "ชื่อไฟล์ = URL" |
+| 6–7 | SQLite + JSON API พร้อม validation · ฟอร์ม htmx ที่ไม่ต้องเขียน JavaScript |
+| 8–11 | Cache (MISS → HIT) · `bun test` + `bun run check` · production · แม่แบบ Full |
+
+ดูในเว็บได้ที่ **`/tutorial`** ตอนรัน `bun dev` (กดเล่นได้ มีเสียง) หรือสร้างไฟล์วิดีโอด้วยคำสั่ง:
+
+```bash
+bun run tutorial    # → dist/kitsune-tutorial.mp4 (1080p 30fps, เสียงเพลง + เสียงพิมพ์ตรงจังหวะ)
+```
+
+บทพูด คำสั่ง และโค้ดทั้งหมดอยู่ใน [`tutorial/script.ts`](tutorial/script.ts) แก้ไฟล์เดียวแล้ว render ใหม่ได้เลย
+
 ## 🎬 วิดีโอ Trailer
 
 วิดีโอแนะนำโปรเจกต์ 80 วินาที **render ด้วย WebGL ล้วนๆ** (three.js) — โมเดล 3D, ภาพหน้าจอจริงของเว็บ และตัวเลขที่วัดจากเซิร์ฟเวอร์ตอน render ดนตรีสังเคราะห์สดด้วย WebAudio (ไม่มีไฟล์เพลง)
@@ -242,6 +275,7 @@ src/
   lib/                 db.ts, bench.ts, examples.ts ฯลฯ
 public/                ไฟล์ static → /public/...
 trailer/               วิดีโอ trailer (WebGL + WebAudio)
+tutorial/              คลิปสอนใช้ (canvas 2D) · บททั้งหมดอยู่ใน script.ts
 tests/                 bun test
 scripts/               bench.ts · cluster.ts · trailer.ts · setup/ (ตั้งค่าโปรเจกต์ใหม่)
 packages/create-kitsune  คำสั่ง bunx create-kitsune (ดาวน์โหลดแม่แบบ + รัน setup)
@@ -330,6 +364,7 @@ const list = await cache.remember('users:all', 30, () => db.query('...').all())
 | `bun run check` | ตรวจ TypeScript + XSS |
 | `bun run bench` | ยิงโหลดใส่เซิร์ฟเวอร์ที่เปิดอยู่ |
 | `bun run trailer` | สร้างวิดีโอ trailer เป็น MP4 |
+| `bun run tutorial` | สร้างคลิปสอนใช้เป็น MP4 |
 
 ### Environment
 

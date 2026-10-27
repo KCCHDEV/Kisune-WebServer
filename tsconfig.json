@@ -21,5 +21,5 @@
       "@components/*": ["./src/components/*"]
     }
   },
-  "include": ["index.tsx", "core", "src", "tests", "scripts", "trailer"]
+  "include": ["index.tsx", "core", "src", "tests", "scripts", "trailer", "tutorial"]
 }

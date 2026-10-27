@@ -5,6 +5,8 @@
  *   bun run trailer -- --frames 3,8,20   render เฉพาะบางวินาทีเป็น PNG (ไว้ตรวจงาน) → dist/frames/
  *   bun run trailer -- --frames 11 --jpg --out .github/assets   ภาพนิ่ง JPG ไว้ใช้ใน README
  *   bun run trailer -- --no-shots        ใช้ภาพหน้าจอเดิมใน public/trailer/
+ *   bun run trailer -- --tutorial        วิดีโอสอนใช้ (/tutorial) → dist/kitsune-tutorial.mp4
+ *                                        ภาพหน้าจอของคลิปสอนอยู่ใน public/tutorial/ (ถ่ายจากแอพตัวอย่าง ไม่ได้ถ่ายใหม่ทุกครั้ง)
  *   BROWSER="C:/path/to/chrome.exe" bun run trailer
  *
  * สคริปต์จะเปิดเซิร์ฟเวอร์ production ของตัวเองที่พอร์ต 3123 แล้วปิดให้เมื่อเสร็จ
@@ -21,6 +23,7 @@ const { values } = parseArgs({
     out: { type: 'string' },
     jpg: { type: 'boolean', default: false },
     'no-shots': { type: 'boolean', default: false },
+    tutorial: { type: 'boolean', default: false },
     port: { type: 'string', default: '3123' },
   },
 })
@@ -50,6 +53,7 @@ mkdirSync(DIST, { recursive: true })
 mkdirSync(SHOTS, { recursive: true })
 
 const base = `http://localhost:${values.port}`
+const kind = values.tutorial ? 'tutorial' : 'trailer'
 const step = (msg: string) => console.log(`\x1b[95m▸\x1b[0m ${msg}`)
 
 /* ---------- เปิดเซิร์ฟเวอร์ของตัวเอง ---------- */
@@ -72,17 +76,18 @@ try {
   browser = await puppeteer.launch({
     executablePath: browserPath,
     headless: true,
+    protocolTimeout: 60 * 60_000, // export วิดีโอยาวใช้เวลานานกว่าค่าเริ่มต้น 180 วินาที
     args: ['--enable-gpu', '--use-angle=d3d11', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
     defaultViewport: { width: 1920, height: 1080 },
   })
 
-  if (!values['no-shots'] && !values.frames) await captureShots(browser)
+  if (!values['no-shots'] && !values.frames && !values.tutorial) await captureShots(browser)
   else if (!existsSync(join(SHOTS, 'landing.jpg'))) await captureShots(browser)
 
   const page = await browser.newPage()
   page.on('console', (m) => m.type() === 'error' && !m.text().includes('404') && console.log('  [browser]', m.text()))
-  await page.goto(base + '/trailer?export=1', { waitUntil: 'networkidle0' })
-  await page.waitForFunction('window.trailer', { timeout: 60_000 })
+  await page.goto(`${base}/${kind}?export=1`, { waitUntil: 'networkidle0' })
+  await page.waitForFunction('window.video', { timeout: 60_000 })
 
   if (values.frames) await renderStills(page, values.frames)
   else await renderVideo(page)
@@ -148,7 +153,7 @@ async function renderStills(page: Page, list: string) {
   const canvas = (await page.$('canvas'))!
   const ext = values.jpg ? 'jpg' : 'png'
   for (const t of list.split(',').map(Number)) {
-    await page.evaluate((t) => (window as any).trailer.renderFrame(t), t)
+    await page.evaluate((t) => (window as any).video.renderFrame(t), t)
     const file = join(dir, `t${String(t).padStart(5, '0')}.${ext}`)
     await canvas.screenshot(values.jpg ? { path: file as `${string}.jpg`, type: 'jpeg', quality: 86 } : { path: file as `${string}.png` })
     console.log(`  ✓ ${file}`)
@@ -165,7 +170,7 @@ async function renderVideo(page: Page) {
 
   step('render วิดีโอ (ทีละเฟรม)')
   const started = performance.now()
-  const done = page.evaluate(() => (window as any).trailer.export() as Promise<number>)
+  const done = page.evaluate(() => (window as any).video.export() as Promise<number>)
   let last = -1
   const timer = setInterval(async () => {
     const p = await page.evaluate(() => (window as any).__exportProgress ?? 0).catch(() => last)
@@ -186,7 +191,7 @@ async function renderVideo(page: Page) {
     if (file && statSync(join(tmp, file)).size === size) break
     await Bun.sleep(100)
   }
-  const out = join(DIST, 'kitsune-trailer.mp4')
+  const out = join(DIST, `kitsune-${kind}.mp4`)
   renameSync(join(tmp, file), out)
   rmSync(tmp, { recursive: true, force: true })
   const secs = ((performance.now() - started) / 1000).toFixed(0)

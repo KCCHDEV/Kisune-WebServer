@@ -9,6 +9,10 @@ import { DURATION } from './timeline'
 export type ExportOptions = {
   canvas: HTMLCanvasElement
   renderFrame: (t: number) => void
+  /** ความยาววิดีโอ (วินาที) — ค่าเริ่มต้นคือความยาวของ trailer */
+  duration?: number
+  /** วางโน้ตเพลงลง AudioContext — ค่าเริ่มต้นคือเพลงของ trailer */
+  music?: (ctx: BaseAudioContext, offset: number, when: number) => void
   fps?: number
   bitrate?: number
   onProgress?: (p: number, label: string) => void
@@ -16,7 +20,15 @@ export type ExportOptions = {
 
 const SAMPLE_RATE = 48000
 
-export async function exportMp4({ canvas, renderFrame, fps = 30, bitrate = 10_000_000, onProgress }: ExportOptions) {
+export async function exportMp4({
+  canvas,
+  renderFrame,
+  duration = DURATION,
+  music = scheduleMusic,
+  fps = 30,
+  bitrate = 10_000_000,
+  onProgress,
+}: ExportOptions) {
   const { width, height } = canvas
   const muxer = new Muxer({
     target: new ArrayBufferTarget(),
@@ -27,8 +39,8 @@ export async function exportMp4({ canvas, renderFrame, fps = 30, bitrate = 10_00
 
   /* ---------- เสียง: render ทั้งเพลงแบบ offline ---------- */
   onProgress?.(0, 'กำลังสร้างเสียง…')
-  const offline = new OfflineAudioContext(2, SAMPLE_RATE * DURATION, SAMPLE_RATE)
-  scheduleMusic(offline, 0, 0)
+  const offline = new OfflineAudioContext(2, Math.ceil(SAMPLE_RATE * duration), SAMPLE_RATE)
+  music(offline, 0, 0)
   const audio = await offline.startRendering()
 
   const audioEncoder = new AudioEncoder({
@@ -64,7 +76,7 @@ export async function exportMp4({ canvas, renderFrame, fps = 30, bitrate = 10_00
   })
   videoEncoder.configure({ codec: 'avc1.640028', width, height, bitrate, framerate: fps, latencyMode: 'quality' })
 
-  const frames = Math.round(DURATION * fps)
+  const frames = Math.round(duration * fps)
   for (let i = 0; i < frames; i++) {
     renderFrame(i / fps)
     const frame = new VideoFrame(canvas, { timestamp: Math.round((i * 1e6) / fps), duration: Math.round(1e6 / fps) })

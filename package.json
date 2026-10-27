@@ -33,6 +33,7 @@
     "test": "bun test",
     "bench": "bun scripts/bench.ts",
     "trailer": "bun scripts/trailer.ts",
+    "tutorial": "bun scripts/trailer.ts --tutorial",
     "check": "tsc --noEmit && xss-scan",
     "setup": "bun scripts/setup/index.ts"
   },

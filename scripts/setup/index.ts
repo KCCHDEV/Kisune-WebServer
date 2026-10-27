@@ -43,7 +43,7 @@ ADMIN_KEY=change-me
 CACHE_MAX_MB=128
 `
 
-const MINIMAL_FOOTER_COLUMNS = `const columns = [
+const MINIMAL_FOOTER_COLUMNS = `const columns: { title: string; links: { href: string; label: string; external?: boolean }[] }[] = [
   {
     title: 'แอพ',
     links: [{ href: '/', label: 'หน้าแรก' }],
@@ -150,9 +150,9 @@ const folder = basename(ROOT)
 const slug = folder.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'my-app'
 const pretty = slug.replace(/(^|-)([a-z])/g, (_, sep: string, ch: string) => (sep ? ' ' : '') + ch.toUpperCase())
 
-// ชื่อแอพ: เก็บเฉพาะตัวอักษรปลอดภัย (ใช้แทรกลงในโค้ด)
+// ชื่อแอพ: เก็บเฉพาะตัวอักษรปลอดภัย (ใช้แทรกลงในโค้ด) · \p{M} = สระ/วรรณยุกต์ไทย
 const appName =
-  (values.name ?? (await ask('ชื่อแอพ (แสดงในเว็บ)', pretty))).replace(/[^\p{L}\p{M}\p{N} ._-]/gu, '') // \p{M} = สระ/วรรณยุกต์ไทย.trim() || pretty
+  (values.name ?? (await ask('ชื่อแอพ (แสดงในเว็บ)', pretty))).replace(/[^\p{L}\p{M}\p{N} ._-]/gu, '').trim() || pretty
 
 const template = (values.template as 'full' | 'minimal' | undefined) ??
   (await choose('เลือกแม่แบบ', [
@@ -177,8 +177,8 @@ ok('ลบไฟล์เฉพาะของ repo Kitsune (issue template, lic
 
 /* ---------- 2) ตัด trailer ---------- */
 if (!keepTrailer) {
-  remove('trailer', 'src/pages/trailer', 'scripts/trailer.ts', 'public/trailer')
-  ok('ตัดวิดีโอ trailer ออก (ลด dependency ได้หลายตัว)')
+  remove('trailer', 'tutorial', 'src/pages/trailer', 'src/pages/tutorial', 'scripts/trailer.ts', 'public/trailer', 'public/tutorial')
+  ok('ตัดวิดีโอ trailer + คลิปสอนออก (ลด dependency ได้หลายตัว)')
 }
 
 /* ---------- 3) แม่แบบ minimal ---------- */
@@ -229,6 +229,7 @@ for (const k of ['description', 'author', 'license', 'homepage', 'repository', '
 delete pkg.scripts.setup
 if (!keepTrailer) {
   delete pkg.scripts.trailer
+  delete pkg.scripts.tutorial
   for (const d of ['three', 'mp4-muxer']) delete pkg.dependencies?.[d]
   for (const d of ['@types/three', 'puppeteer-core', '@fontsource/ibm-plex-sans-thai', '@fontsource/jetbrains-mono']) delete pkg.devDependencies?.[d]
 }
@@ -309,7 +310,7 @@ bun dev          # โหมดพัฒนา → http://localhost:3000
 | \`bun dev\` | โหมดพัฒนา (auto-reload) |
 | \`bun start\` | โหมด production |
 | \`bun test\` | รันเทส |
-| \`bun run check\` | ตรวจ TypeScript + XSS |${tpl === 'full' ? '\n| `bun run bench` | ยิงโหลดใส่เซิร์ฟเวอร์ที่เปิดอยู่ |' : ''}${trailer ? '\n| `bun run trailer` | สร้างวิดีโอ trailer เป็น MP4 |' : ''}
+| \`bun run check\` | ตรวจ TypeScript + XSS |${tpl === 'full' ? '\n| `bun run bench` | ยิงโหลดใส่เซิร์ฟเวอร์ที่เปิดอยู่ |' : ''}${trailer ? '\n| `bun run trailer` | สร้างวิดีโอ trailer เป็น MP4 |\n| `bun run tutorial` | สร้างคลิปสอนใช้เป็น MP4 |' : ''}
 
 ## โครงสร้าง
 
