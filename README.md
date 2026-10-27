@@ -218,7 +218,7 @@ cd kitsune && bun install && bun dev
 | 6–7 | SQLite + JSON API พร้อม validation · ฟอร์ม htmx ที่ไม่ต้องเขียน JavaScript |
 | 8–11 | Cache (MISS → HIT) · `bun test` + `bun run check` · production · แม่แบบ Full |
 
-ดูในเว็บได้ที่ **`/tutorial`** ตอนรัน `bun dev` (กดเล่นได้ มีเสียง) หรือสร้างไฟล์วิดีโอด้วยคำสั่ง:
+**[⬇ ดาวน์โหลดคลิป (MP4, 88 MB)](https://github.com/KCCHDEV/Kisune-WebServer/releases/download/v1.0.0/kitsune-tutorial.mp4)** · หรือดูในเว็บได้ที่ **`/tutorial`** ตอนรัน `bun dev` (กดเล่นได้ มีเสียง) หรือสร้างไฟล์วิดีโอด้วยคำสั่ง:
 
 ```bash
 bun run tutorial    # → dist/kitsune-tutorial.mp4 (1080p 30fps, เสียงเพลง + เสียงพิมพ์ตรงจังหวะ)
