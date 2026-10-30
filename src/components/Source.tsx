@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { relative } from 'node:path'
+import { projectFile } from '@core/files'
 import { highlight } from '../lib/highlight'
 
 const cache = new Map<string, string>()
@@ -10,12 +11,13 @@ const safeIcon = '&lt;/&gt;' // escape ไว้แล้ว
  *   <Source file={import.meta.path} />
  */
 export default function Source({ file, open }: { file: string; open?: boolean }) {
+  const name = relative(process.cwd(), file).replaceAll('\\', '/')
   let safeHtml = cache.get(file)
   if (safeHtml === undefined) {
-    safeHtml = highlight(readFileSync(file, 'utf8'))
+    // อ่านผ่าน projectFile: ตอนรันจาก build ซอร์สถูกคัดลอก/ฝังไว้ตาม path จากรากโปรเจกต์
+    safeHtml = highlight(readFileSync(projectFile(name), 'utf8'))
     if (process.env.NODE_ENV === 'production') cache.set(file, safeHtml)
   }
-  const name = relative(process.cwd(), file).replaceAll('\\', '/')
   const lines = safeHtml.split('\n').length
 
   return (

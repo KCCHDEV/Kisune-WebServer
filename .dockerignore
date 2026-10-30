@@ -1,0 +1,10 @@
+node_modules
+dist
+.kitsune
+.git
+.github
+.claude
+*.sqlite
+*.sqlite-*
+.env
+*.log

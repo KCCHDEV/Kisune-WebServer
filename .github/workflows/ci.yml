@@ -24,3 +24,14 @@ jobs:
 
       - name: Tests
         run: bun test
+
+      - name: Build standalone + smoke test
+        run: |
+          bun run build
+          mkdir -p /tmp/run && cd /tmp/run
+          PORT=3999 bun "$GITHUB_WORKSPACE/dist/standalone/server.js" &
+          for i in $(seq 1 50); do curl -sf localhost:3999/api/hello > /dev/null && break; sleep 0.2; done
+          curl -sf localhost:3999/ > /dev/null
+          curl -sf localhost:3999/public/style.css > /dev/null
+          curl -sf localhost:3999/vendor/htmx.js > /dev/null
+          echo "standalone OK"

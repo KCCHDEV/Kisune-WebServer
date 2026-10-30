@@ -268,6 +268,7 @@ core/                  ระบบเบื้องหลัง (ปกติ�
   http-cache.ts        cache ทั้ง response + brotli / gzip + ETag
   static.ts            เสิร์ฟ /public และ /vendor จากหน่วยความจำ
   logger.ts            console: banner, ตาราง route, request log
+  files.ts             หาไฟล์ให้ถูกที่ ทั้งตอน dev, standalone และ executable
 src/
   api/                 JSON API → /api/...
   pages/               หน้าเว็บ JSX + htmx → /...
@@ -277,7 +278,8 @@ public/                ไฟล์ static → /public/...
 trailer/               วิดีโอ trailer (WebGL + WebAudio)
 tutorial/              คลิปสอนใช้ (canvas 2D) · บททั้งหมดอยู่ใน script.ts
 tests/                 bun test
-scripts/               bench.ts · cluster.ts · trailer.ts · setup/ (ตั้งค่าโปรเจกต์ใหม่)
+scripts/               build.ts · bench.ts · cluster.ts · trailer.ts · setup/ (ตั้งค่าโปรเจกต์ใหม่)
+Dockerfile             image production (ใช้ผล bun run build)
 packages/create-kitsune  คำสั่ง bunx create-kitsune (ดาวน์โหลดแม่แบบ + รัน setup)
 ```
 
@@ -360,6 +362,8 @@ const list = await cache.remember('users:all', 30, () => db.query('...').all())
 | `bun dev` | โหมดพัฒนา (auto-reload เมื่อแก้/เพิ่ม/ลบไฟล์) |
 | `bun start` | โหมด production |
 | `bun run start:cluster` | production ทุก CPU core (Linux, `reusePort`) |
+| `bun run build` | build แบบ standalone → `dist/standalone/server.js` |
+| `bun run build:compile` | build เป็น executable ไฟล์เดียว → `dist/kitsune` |
 | `bun test` | รันเทสทั้งหมด |
 | `bun run check` | ตรวจ TypeScript + XSS |
 | `bun run bench` | ยิงโหลดใส่เซิร์ฟเวอร์ที่เปิดอยู่ |
@@ -380,7 +384,34 @@ const list = await cache.remember('users:all', 30, () => db.query('...').all())
 | `LOG_STATIC` / `LOG_BENCH` | `0` | `1` = log `/public` / `/api/bench` ด้วย |
 | `NO_COLOR` / `FORCE_COLOR` | | ปิด / บังคับสีใน console |
 
-### Deploy
+### Build & Deploy
+
+build ได้ 2 แบบ คล้าย `output: 'standalone'` ของ Next.js ทั้งสองแบบรวมทุก route ไว้ล่วงหน้า minify แล้ว และพกไปแค่ไฟล์ที่ใช้จริง:
+
+| คำสั่ง | ได้อะไร | เครื่องปลายทางต้องมี |
+| --- | --- | --- |
+| `bun run build` | `dist/standalone/` — `server.js` ไฟล์เดียว (~600 kB) + public, htmx, ฟอนต์ | Bun (ไม่ต้อง `bun install`) |
+| `bun run build:compile` | `dist/kitsune` — executable ไฟล์เดียว ฝังทุกไฟล์ไว้ข้างใน | ไม่ต้องมีอะไรเลย |
+
+```bash
+bun run build
+bun dist/standalone/server.js                     # หรือคัดลอกทั้งโฟลเดอร์ไปเซิร์ฟเวอร์
+
+bun run build:compile                             # executable สำหรับเครื่องนี้
+bun run build:compile -- --target bun-linux-x64   # cross-compile → dist/kitsune-linux-x64
+```
+
+ตอนจบ build จะแสดงตาราง route แบบ `next build`: **○** cache ทั้งหน้า · **ƒ** render ทุก request · **⇄** WebSocket
+ทั้งสองแบบอ่าน `.env` และสร้างไฟล์ฐานข้อมูลใน **โฟลเดอร์ที่สั่งรัน** — build ใหม่ทับเมื่อไหร่ข้อมูลก็ไม่หาย
+
+**Docker** — มี `Dockerfile` แบบ multi-stage ให้แล้ว image สุดท้ายมีแค่ Bun + `dist/standalone` ส่วนฐานข้อมูลอยู่ใน volume `/data`:
+
+```bash
+docker build -t my-app .
+docker run -p 3000:3000 -v kitsune-data:/data --env-file .env my-app
+```
+
+**ไม่ build ก็ได้** — รันจากซอร์สตรงๆ:
 
 ```bash
 NODE_ENV=production COOKIE_SECRET=... ADMIN_KEY=... bun start

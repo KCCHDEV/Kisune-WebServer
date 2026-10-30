@@ -3,18 +3,20 @@
  * และเพราะ URL เปลี่ยนทุกครั้งที่ไฟล์เปลี่ยน server จึงสั่ง browser cache ได้ 1 ปีเต็ม (ดู core/static.ts)
  *   <link rel="stylesheet" href={asset('/public/style.css')} />
  *   <script src={asset('/vendor/htmx.js')} defer></script>
+ *
+ * รันจาก build: ใช้รหัส build แทน (ไฟล์ทุกตัวเปลี่ยนพร้อมกันตอน build ใหม่)
  */
 import { statSync } from 'node:fs'
-import { join } from 'node:path'
 import { vendorPath } from '@core/static'
+import { build, projectFile } from '@core/files'
 
 const cache = new Map<string, string>()
 const isProd = process.env.NODE_ENV === 'production'
 
-const fileOf = (url: string) =>
-  url.startsWith('/vendor/') ? vendorPath(url.slice('/vendor/'.length)) : join(process.cwd(), url.replace(/^\//, ''))
+const fileOf = (url: string) => (url.startsWith('/vendor/') ? vendorPath(url.slice('/vendor/'.length)) : projectFile(url))
 
 export function asset(url: string): string {
+  if (build) return `${url}?v=${build.id}`
   const hit = cache.get(url)
   if (hit) return hit
   let versioned = url

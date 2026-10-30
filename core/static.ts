@@ -12,9 +12,10 @@ import { statSync } from 'node:fs'
 import { join, resolve, sep } from 'node:path'
 import { cache } from './cache'
 import { pack, respond, type Packed } from './http-cache'
+import { embedded, isEmbeddedBuild, projectFile } from './files'
 
 const isProd = process.env.NODE_ENV === 'production'
-const PUBLIC_DIR = resolve('public')
+const PUBLIC_DIR = resolve(projectFile('public'))
 
 /** ชื่อที่ใช้ใน URL → ไฟล์ใน node_modules */
 export const VENDOR: Record<string, string> = {
@@ -24,7 +25,7 @@ export const VENDOR: Record<string, string> = {
   'htmx-preload.js': 'htmx-ext-preload/dist/preload.min.js',
 }
 
-export const vendorPath = (name: string) => join(process.cwd(), 'node_modules', VENDOR[name] ?? '')
+export const vendorPath = (name: string) => projectFile(join('node_modules', VENDOR[name] ?? ''))
 
 const minifier = new Bun.Transpiler({ loader: 'js', minifyWhitespace: true })
 
@@ -70,9 +71,10 @@ export const staticFiles = new Elysia({ name: 'static-files' })
     } catch {
       rel = params['*']
     }
-    const file = resolve(PUBLIC_DIR, rel)
+    // ไฟล์ executable: หาเฉพาะไฟล์ที่ฝังไว้ (ชื่อต้องตรงเป๊ะ จึงหลุดออกนอก public ไม่ได้)
+    const file = isEmbeddedBuild() ? embedded(`public/${rel}`) : resolve(PUBLIC_DIR, rel)
     // กัน path traversal เช่น /public/../.env
-    if (!file.startsWith(PUBLIC_DIR + sep)) return ((set.status = 404), 'Not Found')
+    if (!file || (!isEmbeddedBuild() && !file.startsWith(PUBLIC_DIR + sep))) return ((set.status = 404), 'Not Found')
 
     const packed = await load(file, `static:${file}`)
     if (!packed) return ((set.status = 404), 'Not Found')

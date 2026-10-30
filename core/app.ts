@@ -8,6 +8,7 @@ import { openapi } from '@elysiajs/openapi'
 import { generateComponents } from './components'
 import { loadRoutes } from './router'
 import { staticFiles } from './static'
+import { build } from './files'
 import { c, logEvent, requestLogger } from './logger'
 
 export const COOKIE_SECRET = process.env.COOKIE_SECRET ?? 'dev-cookie-secret'
@@ -16,8 +17,8 @@ export const COOKIE_SECRET = process.env.COOKIE_SECRET ?? 'dev-cookie-secret'
 const logRequests = process.env.NODE_ENV !== 'test' && process.env.LOG !== '0'
 
 export async function createApp() {
-  // สร้าง src/components/index.ts ก่อน เพราะ pages จะ import จาก '@components'
-  await generateComponents('src/components')
+  // สร้าง src/components/index.ts ก่อน เพราะ pages จะ import จาก '@components' (build รวมไว้ให้แล้ว ไม่ต้องทำ)
+  if (!build) await generateComponents('src/components')
 
   const app = new Elysia({
     // cookie ชื่อ session จะถูกเซ็น (กันแก้ค่าเองจากฝั่ง browser) — ดู src/pages/examples/auth

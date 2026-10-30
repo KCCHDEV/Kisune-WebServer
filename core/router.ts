@@ -10,6 +10,8 @@
  *
  * ไฟล์/โฟลเดอร์ที่ขึ้นต้นด้วย _ จะไม่ถูกทำเป็น route (เช่น _guard.ts, _404.tsx, _lib/)
  *
+ * ตอนรันจาก build (scripts/build.ts) ไม่มีโฟลเดอร์ให้สแกน — ใช้ module ที่ import ไว้ล่วงหน้าใน build.modules แทน
+ *
  * ในไฟล์ route:
  *   export const GET = ...  / POST / PUT / PATCH / DELETE ...
  *   (เฉพาะ pages) export default = GET
@@ -22,6 +24,7 @@ import { existsSync } from 'node:fs'
 import { METHODS, type Guard, type RouteDef } from './route'
 import { c, logEvent } from './logger'
 import { withResponseCache } from './http-cache'
+import { build } from './files'
 
 type Options = {
   /** โฟลเดอร์ที่จะสแกน */
@@ -72,17 +75,37 @@ function score(path: string) {
 
 const isPrivate = (file: string) => file.split('/').some((s) => s.startsWith('_'))
 
+type Source = { files: string[]; load: (file: string) => Promise<Record<string, any>> }
+
+/** ไฟล์ทั้งหมดในโฟลเดอร์ (path แบบ a/b.tsx) และวิธีโหลด — จากดิสก์ หรือจาก build */
+function sourceOf(dir: string): Source {
+  if (build) {
+    const prefix = `${dir}/`
+    const modules = build.modules
+    return {
+      files: Object.keys(modules)
+        .filter((k) => k.startsWith(prefix))
+        .map((k) => k.slice(prefix.length)),
+      load: async (file) => modules[prefix + file]!,
+    }
+  }
+  const root = resolve(dir)
+  return {
+    files: existsSync(root) ? [...glob.scanSync({ cwd: root })].map((f) => f.replaceAll('\\', '/')) : [],
+    load: (file) => import(join(root, file)),
+  }
+}
+
 /** รวม _guard.ts ทุกตัวจากโฟลเดอร์แม่ลงมาถึงโฟลเดอร์ของไฟล์ */
-async function guardsFor(root: string, file: string, cache: Map<string, Guard | null>) {
+async function guardsFor(src: Source, file: string, cache: Map<string, Guard | null>) {
   const parts = file.split('/').slice(0, -1)
   const result: Guard[] = []
 
   for (let i = 0; i <= parts.length; i++) {
-    const dir = join(root, ...parts.slice(0, i))
+    const dir = parts.slice(0, i).join('/')
     if (!cache.has(dir)) {
-      const candidates = ['_guard.ts', '_guard.tsx'].map((f) => join(dir, f))
-      const found = candidates.find((f) => existsSync(f))
-      cache.set(dir, found ? ((await import(found)).default as Guard) : null)
+      const found = ['_guard.ts', '_guard.tsx'].map((f) => (dir ? `${dir}/${f}` : f)).find((f) => src.files.includes(f))
+      cache.set(dir, found ? ((await src.load(found)).default as Guard) : null)
     }
     const g = cache.get(dir)
     if (g) result.push(g)
@@ -97,12 +120,10 @@ function toDef(exported: unknown): RouteDef | null {
 }
 
 export async function loadRoutes(app: Elysia<any, any, any, any, any, any, any>, opts: Options) {
-  const root = resolve(opts.dir)
+  const src = sourceOf(opts.dir)
   const loaded: LoadedRoute[] = []
-  if (!existsSync(root)) return loaded
 
-  const files = [...glob.scanSync({ cwd: root })]
-    .map((f) => f.replaceAll('\\', '/'))
+  const files = src.files
     .filter((f) => !isPrivate(f) && !f.endsWith('.d.ts') && !/\.(test|spec)\.tsx?$/.test(f))
     .map((file) => ({ file, path: fileToPath(file, opts.prefix) }))
     .sort((a, b) => score(a.path).localeCompare(score(b.path)) || a.path.localeCompare(b.path))
@@ -110,8 +131,8 @@ export async function loadRoutes(app: Elysia<any, any, any, any, any, any, any>,
   const guardCache = new Map<string, Guard | null>()
 
   for (const { file, path } of files) {
-    const mod = await import(join(root, file))
-    const guards = await guardsFor(root, file, guardCache)
+    const mod = await src.load(file)
+    const guards = await guardsFor(src, file, guardCache)
 
     const exports: [string, unknown][] = METHODS.filter((m) => m in mod).map((m) => [m, mod[m]])
     if (opts.kind === 'page' && mod.default && !('GET' in mod)) exports.push(['GET', mod.default])

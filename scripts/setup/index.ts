@@ -309,6 +309,8 @@ bun dev          # โหมดพัฒนา → http://localhost:3000
 | --- | --- |
 | \`bun dev\` | โหมดพัฒนา (auto-reload) |
 | \`bun start\` | โหมด production |
+| \`bun run build\` | build แบบ standalone → \`dist/standalone/server.js\` (ไม่ต้องมี node_modules) |
+| \`bun run build:compile\` | build เป็น executable ไฟล์เดียว → \`dist/\` |
 | \`bun test\` | รันเทส |
 | \`bun run check\` | ตรวจ TypeScript + XSS |${tpl === 'full' ? '\n| `bun run bench` | ยิงโหลดใส่เซิร์ฟเวอร์ที่เปิดอยู่ |' : ''}${trailer ? '\n| `bun run trailer` | สร้างวิดีโอ trailer เป็น MP4 |\n| `bun run tutorial` | สร้างคลิปสอนใช้เป็น MP4 |' : ''}
 

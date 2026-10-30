@@ -1,3 +1,5 @@
 [test]
 # ตั้งค่า env ก่อนโหลดโค้ดใดๆ (เช่น ใช้ SQLite ในหน่วยความจำ)
 preload = ["./tests/setup.ts"]
+# หาเทสเฉพาะใน tests/ (ไม่หยิบสำเนาใน dist/ ที่ bun run build คัดลอกไว้)
+root = "tests"
